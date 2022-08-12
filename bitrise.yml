@@ -24,14 +24,6 @@ workflows:
         - project_location: "$PROJECT_LOCATION"
         - module: "$MODULE"
         - variant: "$VARIANT"
-    - cocoapods-install@2: {}
-    - xcode-archive@4:
-        inputs:
-        - project_path: "$BITRISE_PROJECT_PATH"
-        - scheme: "$BITRISE_SCHEME"
-        - distribution_method: "$BITRISE_DISTRIBUTION_METHOD"
-        - configuration: Release
-        - automatic_code_signing: api-key
     - deploy-to-bitrise-io@2: {}
   primary:
     description: |
