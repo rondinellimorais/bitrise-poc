@@ -25,6 +25,14 @@ workflows:
         - module: "$MODULE"
         - variant: "$VARIANT"
     - deploy-to-bitrise-io@2: {}
+    - slack@3:
+        inputs:
+        - channel: '#release'
+        - text: ':white_check_mark: Build Android concluída com sucesso!'
+        - text_on_error: ':alert_red: Build Android falhou!'
+        - webhook_url_on_error: $WEBHOOK_SLACK
+        - channel_on_error: '#release'
+        - webhook_url: $WEBHOOK_SLACK
   primary:
     description: |
       Runs tests.
