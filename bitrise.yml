@@ -64,7 +64,7 @@ app:
     MODULE: app
   - opts:
       is_expand: false
-    VARIANT: Debug
+    VARIANT: Release
   - opts:
       is_expand: false
     BITRISE_PROJECT_PATH: ios/BitrisePoc.xcworkspace
