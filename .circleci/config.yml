@@ -1,26 +1,83 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  android:
-    machine: true
+  node:
+    working_directory: ~/demo-react-native
+    docker:
+      - image: cimg/node:14.17.0
+
     steps:
       - checkout
-      - run:
-          name: "Install dependencies"
-          command: yarn
-      - run:
-          name: "Build android"
-          command: |
-            cd android
-            ./gradlew assembleRelease
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+      # - restore_cache:
+      #     key: yarn-v1-{{ checksum "yarn.lock" }}-{{ arch }}
+
+      # - restore_cache:
+      #     key: node-v1-{{ checksum "package.json" }}-{{ arch }}
+
+      - run: yarn install
+
+      # - save_cache:
+      #     key: yarn-v1-{{ checksum "yarn.lock" }}-{{ arch }}
+      #     paths:
+      #       - ~/.cache/yarn
+
+      # - save_cache:
+      #     key: node-v1-{{ checksum "package.json" }}-{{ arch }}
+      #     paths:
+      #       - node_modules
+
+      # - run:
+      #     name: jest tests
+      #     command: |
+      #       mkdir -p test-results/jest
+      #       yarn run test
+      #     environment:
+      #       JEST_JUNIT_OUTPUT: test-results/jest/junit.xml
+
+      - persist_to_workspace:
+          root: ~/demo-react-native
+          paths:
+            - node_modules
+
+      # - store_test_results:
+      #     path: test-results
+
+      # - store_artifacts:
+      #     path: test-results
+
+  android-build:
+    working_directory: ~/demo-react-native/android
+    docker:
+      - image: circleci/android:api-29-node
+    steps:
+      - checkout:
+          path: ~/demo-react-native
+
+      - attach_workspace:
+          at: ~/demo-react-native
+
+      # - restore_cache:
+      #     key: bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}
+
+      # - run: bundle install
+
+      # - save_cache:
+      #     key: bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}
+      #     paths:
+      #       - vendor/bundle
+
+      - run: ./gradlew assembleRelease
+
+      # - store_test_results:
+      #     path: test-results
+
+      # - store_artifacts:
+      #     path: test-results
+
 workflows:
-  say-hello-workflow:
+  node-android-ios:
     jobs:
-      - android
+      - node
+      - android-build:
+          requires:
+            - node
